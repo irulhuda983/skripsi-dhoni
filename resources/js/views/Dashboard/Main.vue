@@ -68,7 +68,7 @@
         </div>
 
         <div class="w-full col-span-3">
-            grafik
+            grafik ubah
         </div>
     </div>
 </template>

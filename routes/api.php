@@ -19,4 +19,8 @@ Route::post('logout', 'AuthController@logout')->middleware('auth:sanctum');
 
 Route::prefix('barang')->middleware('auth:sanctum')->group(function(){
     Route::get('/', 'BarangController@index');
+    Route::get('/{id}/show', 'BarangController@show');
+    Route::post('/store', 'BarangController@store');
+    Route::post('/{id}/update', 'BarangController@update');
+    Route::delete('/{id}/delete', 'BarangController@destroy');
 });

@@ -1,3 +1,3 @@
 <template>
-    <div>Master data</div>
+    <router-view></router-view>
 </template>

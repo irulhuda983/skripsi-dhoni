@@ -25,16 +25,56 @@ const routes = [
                 component: () => import("@/views/Dashboard/Main.vue"),
             },
             {
-                name: "masterData",
+                name: "templateMasterData",
                 path: "/master-data",
                 meta: { menu: 'masterData', auth: true, bread: 'Master Data' },
-                component: () => import("@/views/masterData/Main.vue"),
+                component: () => import("@/views/MasterData/Main.vue"),
+                children: [
+                    {
+                        name: "masterData",
+                        path: "/master-data",
+                        meta: { menu: 'masterData', auth: true, bread: 'Master Data' },
+                        component: () => import("@/views/MasterData/ShowAll.vue"),
+                    },
+                    {
+                        name: "tambahMasterData",
+                        path: "/master-data/tambah",
+                        meta: { menu: 'masterData', auth: true, bread: 'Master Data' },
+                        component: () => import("@/views/MasterData/Tambah.vue"),
+                    },
+                    {
+                        name: "editMasterData",
+                        path: "/master-data/:id/edit",
+                        meta: { menu: 'masterData', auth: true, bread: 'Master Data' },
+                        component: () => import("@/views/MasterData/Edit.vue"),
+                    },
+                ],
             },
             {
                 name: "dataAktual",
                 path: "/data-aktual",
                 meta: { menu: 'dataAktual', auth: true, bread: 'Data Aktual' },
-                component: () => import("@/views/dataAktual/Main.vue"),
+                component: () => import("@/views/DataAktual/Main.vue"),
+                children: [
+                    {
+                        name: "showDataAktual",
+                        path: "/data-aktual",
+                        meta: { menu: 'dataAktual', auth: true, bread: 'Data Aktual' },
+                        component: () => import("@/views/DataAktual/ShowAll.vue"),
+                    },
+                    {
+                        name: "tambahDataAktual",
+                        path: "/data-aktual/tambah",
+                        meta: { menu: 'dataAktual', auth: true, bread: 'Data Aktual' },
+                        component: () => import("@/views/DataAktual/Tambah.vue"),
+                    },
+                    {
+                        name: "editDataAktual",
+                        path: "/data-aktual/:id/edit",
+                        meta: { menu: 'dataAktual', auth: true, bread: 'Data Aktual' },
+                        component: () => import("@/views/DataAktual/Edit.vue"),
+                    },
+                ],
             },
             {
                 name: "dataPeramalan",

@@ -15,30 +15,30 @@
                         <th class="px-4 py-2 border-b border-t border-slate-600 text-left">No</th>
                         <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Bulan</th>
                         <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Tahun</th>
-                        <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Data Aktual</th>
-                        <th class="px-4 py-2 border-b border-t border-slate-600 text-left">MSE</th>
-                        <th class="px-4 py-2 border-b border-t border-slate-600 text-left">MAD</th>
-                        <th class="px-4 py-2 border-b border-t border-slate-600 text-left">MAPE</th>
+                        <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Stok</th>
+                        <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Terjual</th>
+                        <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Sisa</th>
+                        <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Kondisi</th>
                         <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Aksi</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    <tr>
-                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">1</td>
-                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">Januari</td>
-                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">2022</td>
-                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">120</td>
-                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left"></td>
-                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left"></td>
-                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left"></td>
+                    <tr v-for="(item, i) in aktual" :key="i">
+                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ i + 1 }}</td>
+                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.bulan }}</td>
+                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.tahun }}</td>
+                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.stok }}</td>
+                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.terjual }}</td>
+                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.sisa }}</td>
+                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.kondisi }}</td>
                         <td class="px-4 py-2 border-b border-t border-slate-600">
-                            <button @click.prevent="$router.push({ name: 'editMasterData', params: {id: 1} })" class="p-1 hover:bg-slate-200 rounded hover:text-slate-900">
+                            <button @click.prevent="$router.push({ name: 'editDataAktual', params: {id: item.id} })" class="p-1 hover:bg-slate-200 rounded hover:text-slate-900">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
                             </button>
-                            <button @click.prevent="openModalDelete(1)" class="p-1 hover:bg-slate-200 rounded hover:text-slate-900">
+                            <button @click.prevent="openModalDelete(item.id)" class="p-1 hover:bg-slate-200 rounded hover:text-slate-900">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
@@ -83,9 +83,9 @@
 export default {
     data(){
         return {
-            barang: [],
+            aktual: [],
             modalDelete: false,
-            id_barang: null,
+            id_aktual: null,
         }
     },
 
@@ -94,23 +94,39 @@ export default {
     },
 
     methods: {
-        getData(){
-            this.barang = []
+        async getData(){
+            try{
+                let res = await axios.get('aktual')
+
+                this.aktual = res.data.data
+            }catch(e){
+                console.log(e)
+            }
         },
 
         openModalDelete(id){
-            this.id_barang = id
+            this.id_aktual = id
             this.modalDelete = true
         },
 
         closeModalDelete(){
-            this.id_barang = null
+            this.id_aktual = null
             this.modalDelete = false
         },
 
-        deleteData(){
-            this.id_barang = null
-            this.modalDelete = false
+        async deleteData(){
+            try{
+                let res = await axios.delete(`aktual/${this.id_aktual}/delete`)
+
+                if(res.status == 200){
+                    this.getData()
+                    this.id_aktual = null
+                    this.modalDelete = false
+                }
+            }catch(e){
+                this.id_aktual = null
+                this.modalDelete = false
+            }
         }
     }
 }

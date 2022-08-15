@@ -18,7 +18,7 @@ class CreateBarangTable extends Migration
             $table->foreignId('jenis_id')->nullable();
             $table->string('kode_barang')->nullable();
             $table->string('nama_barang')->nullable();
-            $table->char('harga')->nullable();
+            $table->string('harga')->nullable();
             $table->timestamps();
         });
     }

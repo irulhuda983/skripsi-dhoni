@@ -51,13 +51,13 @@ const routes = [
                 ],
             },
             {
-                name: "dataAktual",
+                name: "templateDataAktual",
                 path: "/data-aktual",
                 meta: { menu: 'dataAktual', auth: true, bread: 'Data Aktual' },
                 component: () => import("@/views/DataAktual/Main.vue"),
                 children: [
                     {
-                        name: "showDataAktual",
+                        name: "dataAktual",
                         path: "/data-aktual",
                         meta: { menu: 'dataAktual', auth: true, bread: 'Data Aktual' },
                         component: () => import("@/views/DataAktual/ShowAll.vue"),

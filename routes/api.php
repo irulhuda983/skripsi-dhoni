@@ -24,3 +24,15 @@ Route::prefix('barang')->middleware('auth:sanctum')->group(function(){
     Route::post('/{id}/update', 'BarangController@update');
     Route::delete('/{id}/delete', 'BarangController@destroy');
 });
+
+Route::prefix('aktual')->middleware('auth:sanctum')->group(function(){
+    Route::get('/', 'AktualController@index');
+    Route::get('/{aktual}/show', 'AktualController@show');
+    Route::post('/store', 'AktualController@store');
+    Route::post('/{aktual}/update', 'AktualController@update');
+    Route::delete('/{aktual}/delete', 'AktualController@destroy');
+});
+
+Route::prefix('peramalan')->middleware('auth:sanctum')->group(function(){
+    Route::get('/get-wma', 'PeramalanController@getWma');
+});

@@ -12,4 +12,9 @@ class Aktual extends Model
     protected $table = 'data_aktual';
 
     protected $guarded = ['id'];
+
+    public function barang()
+    {
+        return $this->belongsTo(Barang::class);
+    }
 }

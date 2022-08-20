@@ -17,6 +17,7 @@ class AktualResource extends JsonResource
         return [
             'id' => $this->id,
             'barang_id' => $this->barang_id,
+            'barang' => new BarangResource($this->barang),
             'bulan' => $this->getBulan($this->bulan),
             'bulan_show' => $this->bulan,
             'tahun' => $this->tahun,

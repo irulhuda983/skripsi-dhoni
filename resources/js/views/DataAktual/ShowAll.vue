@@ -14,6 +14,8 @@
                 <thead>
                     <tr class="bg-slate-800">
                         <th class="px-4 py-2 border-b border-t border-slate-600 text-left">No</th>
+                        <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Kode Barang</th>
+                        <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Nama Barang</th>
                         <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Bulan</th>
                         <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Tahun</th>
                         <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Stok</th>
@@ -33,6 +35,8 @@
                 <tbody v-else>
                     <tr v-for="(item, i) in aktual" :key="i">
                         <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ i + 1 }}</td>
+                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.barang.kode_barang }}</td>
+                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.barang.nama_barang }}</td>
                         <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.bulan }}</td>
                         <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.tahun }}</td>
                         <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.stok }}</td>

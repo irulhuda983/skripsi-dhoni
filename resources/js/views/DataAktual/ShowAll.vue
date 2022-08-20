@@ -1,7 +1,8 @@
 <template>
     <div class="w-full box-border">
+        <Loader v-show="loading" />
         <div class="w-full box-border flex justify-between items-center mb-8">
-            <div class="text-xs">Showing 10 data</div>
+            <div class="text-xs"></div>
 
             <div class="flex items-center justify-center">
                 <button @click.prevent="$router.push({ name: 'tambahDataAktual'})" class="border border-green-500 bg-green-500 text-xs font-semibold px-4 py-2 rounded hover:bg-transparent hover:text-green-500">Tambah Data</button>
@@ -23,7 +24,13 @@
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody v-if="aktual.length == 0">
+                    <tr>
+                        <td colspan="8" class="px-4 py-3 border-b border-t border-slate-600 text-center italic">Tidak ada data</td>
+                    </tr>
+                </tbody>
+
+                <tbody v-else>
                     <tr v-for="(item, i) in aktual" :key="i">
                         <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ i + 1 }}</td>
                         <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.bulan }}</td>
@@ -46,7 +53,22 @@
                         </td>
                     </tr>
                 </tbody>
+
             </table>
+
+            <div class="box-border overflow-hidden p-6 text-sm pl-3">
+                <div v-if="lastPage > 1" class="w-full box-border flex items-center justify-between z-50">
+                    <div class="text-2xs lg:text-xs">Show {{ perPage  }} data from {{ total }}</div>
+                    <div>
+                        <Pagination
+                            :total="total"
+                            :value="params.page"
+                            :perPage="params.limit"
+                            @set="changePage"
+                        />
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -80,12 +102,26 @@
 </template>
 
 <script>
+const Loader = () => import('@/components/Loader.vue')
+const Pagination = () => import('@/components/Pagination.vue')
 export default {
+    components: { Loader, Pagination },
     data(){
         return {
+            loading: false,
             aktual: [],
             modalDelete: false,
             id_aktual: null,
+            params : {
+                cari: "",
+                page: 1,
+                limit: 10,
+                sort: "created_at:desc",
+            },
+            lastPage : 0,
+            total: null,
+            perPage: 10,
+            currentPage: null
         }
     },
 
@@ -95,13 +131,28 @@ export default {
 
     methods: {
         async getData(){
+            this.loading = true
             try{
-                let res = await axios.get('aktual')
+                let { data } = await axios.get('aktual', {params: this.params})
 
-                this.aktual = res.data.data
+                this.aktual = data.data
+                this.total = data.meta.total
+                this.perPage = data.meta.per_page
+                this.currentPage = data.meta.current_page
+                this.lastPage = data.meta.last_page
+                this.loading = false
             }catch(e){
                 console.log(e)
+                this.loading = false
+                if(e.response.status == 401){
+                    this.$store.dispatch('auth/clear')
+                }
             }
+        },
+
+        changePage(page){
+            this.params.page = page;
+            this.getData();
         },
 
         openModalDelete(id){
@@ -126,6 +177,9 @@ export default {
             }catch(e){
                 this.id_aktual = null
                 this.modalDelete = false
+                if(e.response.status == 401){
+                    this.$store.dispatch('auth/clear')
+                }
             }
         }
     }

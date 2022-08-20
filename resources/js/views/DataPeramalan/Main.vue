@@ -1,11 +1,12 @@
 <template>
     <div class="w-full box-border">
+        <Loader v-show="loading" />
         <div class="w-full box-border flex justify-between items-center mb-8">
             <div class="w-full mb-5">
                 <label for="" class="block mb-3">Pilih Barang</label>
                 <select name="" id="" @change.prevent="getData" v-model="barang" class="w-full border bg-transparent rounded p-3 border border-gray-200">
                     <option value="" class="bg-black">Pilih Barang</option>
-                    <option value="2" class="bg-black">B04 - Minyak Goreng</option>
+                    <option v-for="(item, i) in optBarang" :key="i" :value="item.id" class="bg-black">{{ item.kode_barang}} - {{ item.nama_barang }}</option>
                 </select>
             </div>
         </div>
@@ -25,6 +26,12 @@
                         <th class="px-4 py-2 border-b border-t border-slate-600 text-left">MAPE</th>
                     </tr>
                 </thead>
+
+                <tbody v-if="peramalan.length == 0">
+                    <tr>
+                        <td colspan="9" class="px-4 py-3 border-b border-t border-slate-600 text-center italic">Tidak ada data</td>
+                    </tr>
+                </tbody>
 
                 <tbody>
                     <tr v-for="(item, i) in peramalan" :key="i">
@@ -50,9 +57,9 @@
                 </tbody>
             </table>
 
-            <!-- <div class="w-full mt-8">
-                <p>Hasil Peramalan Stok Untuk Bulan Januari Adalah Sebesar 43,50 atau dibulatkan Menjadi 44</p>
-            </div> -->
+            <div class="w-full mt-8" v-if="hasil">
+                <p>Hasil Peramalan Stok pada periode <span class="font-bold underline">{{ periode }}</span> adalah <span class="font-bold underline">{{ hasil }}</span> dan jika di bulatkan menjadi <span class="font-bold underline">{{ Math.round(hasil) }}</span></p>
+            </div>
         </div>
 
 
@@ -86,21 +93,44 @@
 </template>
 
 <script>
+const Loader = () => import('@/components/Loader.vue')
 export default {
+    components: { Loader },
     data(){
         return {
+            loading: false,
+            optBarang: [],
             peramalan: [],
             error: {},
             mad: {},
             mse: {},
             mape: {},
+            hasil: null,
+            periode: null,
             barang: '',
             modalDelete: false,
             id_aktual: null,
         }
     },
 
+    mounted(){
+        this.getBarang()
+    },
+
     methods: {
+        async getBarang(){
+            this.loading = true
+            try{
+                let { data } = await axios.get('barang/opt')
+
+                this.optBarang = data
+                this.loading = false
+            }catch(e){
+                console.log(e)
+                this.loading = false
+            }
+        },
+
         async getData(){
             try{
                 let res = await axios.get(`peramalan/get-wma?barang_id=${this.barang}`)
@@ -110,8 +140,23 @@ export default {
                 this.mad = res.data.mad
                 this.mse = res.data.mse
                 this.mape = res.data.mape
+                this.hasil = res.data.hasil
+                this.periode = res.data.periode
             }catch(e){
-                console.log(e)
+                if(e.response.status == 404){
+                    this.peramalan = []
+                    this.error = {}
+                    this.mad = {}
+                    this.mse = {}
+                    this.mape = {}
+                    this.hasil = null
+                    this.periode = null
+                }
+                if(e.response.status == 401){
+                    this.$store.dispatch('auth/clear')
+                }
+
+
             }
         },
 

@@ -1,7 +1,8 @@
 <template>
     <div class="w-full box-border">
+        <Loader v-show="loading" />
         <div class="w-full box-border flex justify-between items-center mb-8">
-            <div class="text-xs">Showing 10 data</div>
+            <div class="text-xs"></div>
 
             <div class="flex items-center justify-center">
                 <button @click.prevent="$router.push({ name: 'tambahMasterData'})" class="border border-green-500 bg-green-500 text-xs font-semibold px-4 py-2 rounded hover:bg-transparent hover:text-green-500">Tambah Barang</button>
@@ -15,19 +16,25 @@
                         <th class="px-4 py-2 border-b border-t border-slate-600 text-left">No</th>
                         <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Kode Barang</th>
                         <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Nama Barang</th>
-                        <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Harga</th>
+                        <!-- <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Harga</th> -->
                         <th class="px-4 py-2 border-b border-t border-slate-600 text-left">Aksi</th>
                     </tr>
                 </thead>
+
+                <tbody v-if="barang.length == 0">
+                    <tr>
+                        <td colspan="4" class="px-4 py-3 border-b border-t border-slate-600 text-center italic">Tidak ada data</td>
+                    </tr>
+                </tbody>
 
                 <tbody>
                     <tr v-for="(item, i) in barang" :key="i">
                         <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ i + 1 }}</td>
                         <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.kode_barang }}</td>
                         <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.nama_barang }}</td>
-                        <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.harga }}</td>
+                        <!-- <td class="px-4 py-2 border-b border-t border-slate-600 text-left">{{ item.harga }}</td> -->
                         <td class="px-4 py-2 border-b border-t border-slate-600">
-                            <button @click.prevent="$router.push({ name: 'editMasterData', params: {id: 1} })" class="p-1 hover:bg-slate-200 rounded hover:text-slate-900">
+                            <button @click.prevent="$router.push({ name: 'editMasterData', params: {id: item.id} })" class="p-1 hover:bg-slate-200 rounded hover:text-slate-900">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
@@ -41,6 +48,20 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="box-border overflow-hidden p-6 text-sm pl-3">
+                <div v-if="lastPage > 1" class="w-full box-border flex items-center justify-between z-50">
+                    <div class="text-2xs lg:text-xs">Show {{ perPage  }} data from {{ total }}</div>
+                    <div>
+                        <Pagination
+                            :total="total"
+                            :value="params.page"
+                            :perPage="params.limit"
+                            @set="changePage"
+                        />
+                    </div>
+                </div>
         </div>
 
 
@@ -74,12 +95,26 @@
 </template>
 
 <script>
+const Loader = () => import('@/components/Loader.vue')
+const Pagination = () => import('@/components/Pagination.vue')
 export default {
+    components: { Loader, Pagination },
     data(){
         return {
+            loading: false,
             barang: [],
             modalDelete: false,
             id_barang: null,
+            params : {
+                cari: "",
+                page: 1,
+                limit: 10,
+                sort: "created_at:desc",
+            },
+            lastPage : 0,
+            total: null,
+            perPage: 10,
+            currentPage: null
         }
     },
 
@@ -89,13 +124,25 @@ export default {
 
     methods: {
         async getData(){
+            this.loading = true
             try {
-                let res = await axios.get('barang')
+                let { data } = await axios.get('barang', {params: this.params})
 
-                this.barang = res.data.data
+                this.barang = data.data
+                this.total = data.meta.total
+                this.perPage = data.meta.per_page
+                this.currentPage = data.meta.current_page
+                this.lastPage = data.meta.last_page
+                this.loading = false
             }catch(e){
                 console.log(e)
+                this.loading = false
             }
+        },
+
+        changePage(page){
+            this.params.page = page;
+            this.getData();
         },
 
         openModalDelete(id){
@@ -116,6 +163,12 @@ export default {
                     this.getData()
                     this.id_barang = null
                     this.modalDelete = false
+                    this.$notify({
+                        group: "notif",
+                        title: "Berhasil",
+                        type: 'success',
+                        text: 'Berhasil hapus data'
+                    })
                 }
             }catch(e){
                 this.id_barang = null

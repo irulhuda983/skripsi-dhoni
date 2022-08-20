@@ -1,5 +1,6 @@
 <template>
     <div class="w-full min-h-screen box-border bg-slate-800 text-slate-400 flex justify-between text-sm">
+        <notifications group="notif" />
         <div class="w-64 h-screen flex-none box-border overflow-x-hidden overflow-y-auto">
             <Sidebar />
         </div>
@@ -7,7 +8,7 @@
             <div class="w-full box-border mb-3">
                 <Topbar />
             </div>
-            <div class="w-full box-border bg-slate-900 rounded-2xl p-6 text-slate-200">
+            <div class="w-full box-border bg-slate-900 rounded-2xl p-6 text-slate-200 relative">
                 <router-view></router-view>
             </div>
         </div>

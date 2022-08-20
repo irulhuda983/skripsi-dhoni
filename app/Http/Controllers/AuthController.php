@@ -35,6 +35,21 @@ class AuthController extends Controller
         return new UserResource($request->user());
     }
 
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'nullable',
+        ]);
+
+        $user = $request->user();
+
+        $user->update([
+            'password' => bcrypt('root123')
+        ]);
+
+        return response()->json(['message' => 'berhasil ubah password'], 200);
+    }
+
     public function logout(Request $request)
     {
         // $request->user()->tokens()->delete();

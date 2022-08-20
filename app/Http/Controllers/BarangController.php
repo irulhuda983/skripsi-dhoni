@@ -10,7 +10,7 @@ class BarangController extends Controller
 {
     public function index(Request $request)
     {
-        $barang = Barang::paginate($request->limit ?? 10);
+        $barang = Barang::orderBy('created_at', 'DESC')->paginate($request->limit ?? 10);
 
         return BarangResource::collection($barang);
     }
@@ -20,6 +20,11 @@ class BarangController extends Controller
         $barang = Barang::find($id);
 
         return new BarangResource($barang);
+    }
+
+    public function opt()
+    {
+        return response()->json(Barang::all(), 200);
     }
 
     public function store(Request $request)
@@ -32,7 +37,7 @@ class BarangController extends Controller
         $barang = Barang::create([
             'kode_barang' => $request->kode_barang,
             'nama_barang' => $request->nama_barang,
-            'harga' => $request->harga,
+            // 'harga' => $request->harga,
         ]);
 
         return response()->json([
@@ -53,7 +58,7 @@ class BarangController extends Controller
         $barang->update([
             'kode_barang' => $request->kode_barang,
             'nama_barang' => $request->nama_barang,
-            'harga' => $request->harga,
+            // 'harga' => $request->harga,
         ]);
 
         return response()->json([

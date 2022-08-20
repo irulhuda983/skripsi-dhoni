@@ -16,9 +16,16 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', 'AuthController@login');
 Route::get('profil', 'AuthController@profil')->middleware('auth:sanctum');
 Route::post('logout', 'AuthController@logout')->middleware('auth:sanctum');
+Route::post('ubah-password', 'AuthController@updatePassword')->middleware('auth:sanctum');
+
+Route::prefix('dashboard')->middleware('auth:sanctum')->group(function(){
+    Route::get('/grafik', 'DashboardController@grafik');
+    Route::get('/total', 'DashboardController@total');
+});
 
 Route::prefix('barang')->middleware('auth:sanctum')->group(function(){
     Route::get('/', 'BarangController@index');
+    Route::get('/opt', 'BarangController@opt');
     Route::get('/{id}/show', 'BarangController@show');
     Route::post('/store', 'BarangController@store');
     Route::post('/{id}/update', 'BarangController@update');

@@ -17,10 +17,10 @@
                 <input id="kode_barang" v-model="payload.nama_barang" type="text" class="w-full border bg-transparent rounded p-3 border border-gray-200" placeholder="Masukkan Nama Barang">
             </div>
 
-            <div class="mb-5">
+            <!-- <div class="mb-5">
                 <label for="kode_barang" class="block mb-2">Harga</label>
                 <input id="kode_barang" v-model="payload.harga" type="text" class="w-full border bg-transparent rounded p-3 border border-gray-200" placeholder="Masukkan Harga">
-            </div>
+            </div> -->
 
             <div class="mb-5">
                 <button type="submit" class="border border-green-500 bg-green-500 text-xs font-semibold px-4 py-2 rounded hover:bg-transparent hover:text-green-500">Simpan</button>
@@ -38,7 +38,7 @@ export default {
             payload: {
                 kode_barang: '',
                 nama_barang: '',
-                harga: '',
+                // harga: '',
             }
         }
     },
@@ -50,6 +50,12 @@ export default {
 
                 if(res.status == 200){
                     this.$router.push({ name: 'masterData'})
+                    this.$notify({
+                        group: "notif",
+                        title: "Berhasil",
+                        type: 'success',
+                        text: 'Berhasil tambah data'
+                    })
                 }
             }catch(e){
                 if(e.response.status == 401){

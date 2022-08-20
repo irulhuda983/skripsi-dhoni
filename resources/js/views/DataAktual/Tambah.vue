@@ -7,9 +7,12 @@
 
         <form @submit.prevent="simpanData">
         <div class="form">
-            <div class="mb-5">
-                <label for="kode_barang" class="block mb-2">Barang</label>
-                <input id="kode_barang" v-model="payload.barang_id" type="text" class="w-full border bg-transparent rounded p-3 border border-gray-200" placeholder="Masukkan Kode Barang">
+            <div class="w-full mb-5">
+                <label for="" class="block mb-3">Pilih Barang</label>
+                <select name="" id="" v-model="payload.barang_id" class="w-full border bg-transparent rounded p-3 border border-gray-200">
+                    <option value="" class="bg-black">Pilih Barang</option>
+                    <option v-for="(item, i) in optBarang" :key="i" :value="item.id" class="bg-black">{{ item.kode_barang}} - {{ item.nama_barang }}</option>
+                </select>
             </div>
 
             <div class="mb-5">
@@ -19,22 +22,36 @@
 
             <div class="mb-5">
                 <label for="kode_barang" class="block mb-2">Bulan</label>
-                <input id="kode_barang" v-model="payload.bulan" type="text" class="w-full border bg-transparent rounded p-3 border border-gray-200" placeholder="Masukkan Harga">
+                <select name="" id="" v-model="payload.bulan" class="w-full border bg-transparent rounded p-3 border border-gray-200">
+                    <option value="" class="bg-black">Pilih Bulan</option>
+                    <option value="1" class="bg-black">Januari</option>
+                    <option value="2" class="bg-black">Februari</option>
+                    <option value="3" class="bg-black">Maret</option>
+                    <option value="4" class="bg-black">April</option>
+                    <option value="5" class="bg-black">Mei</option>
+                    <option value="6" class="bg-black">Juni</option>
+                    <option value="7" class="bg-black">Juli</option>
+                    <option value="8" class="bg-black">Agustus</option>
+                    <option value="9" class="bg-black">September</option>
+                    <option value="10" class="bg-black">Oktober</option>
+                    <option value="11" class="bg-black">November</option>
+                    <option value="12" class="bg-black">Desember</option>
+                </select>
             </div>
 
             <div class="mb-5">
                 <label for="kode_barang" class="block mb-2">Stok</label>
-                <input id="kode_barang" v-model="payload.stok" type="text" class="w-full border bg-transparent rounded p-3 border border-gray-200" placeholder="Masukkan Harga">
+                <input id="kode_barang" v-model="payload.stok" type="number" class="w-full border bg-transparent rounded p-3 border border-gray-200" placeholder="Masukkan Harga">
             </div>
 
             <div class="mb-5">
                 <label for="kode_barang" class="block mb-2">Terjual</label>
-                <input id="kode_barang" v-model="payload.terjual" type="text" class="w-full border bg-transparent rounded p-3 border border-gray-200" placeholder="Masukkan Harga">
+                <input id="kode_barang" v-model="payload.terjual" type="number" class="w-full border bg-transparent rounded p-3 border border-gray-200" placeholder="Masukkan Harga">
             </div>
 
             <div class="mb-5">
                 <label for="kode_barang" class="block mb-2">Sisa</label>
-                <input id="kode_barang" v-model="payload.sisa" type="text" class="w-full border bg-transparent rounded p-3 border border-gray-200" placeholder="Masukkan Harga">
+                <input id="kode_barang" v-model="payload.sisa" type="number" class="w-full border bg-transparent rounded p-3 border border-gray-200" placeholder="Masukkan Harga">
             </div>
 
             <div class="mb-5">
@@ -55,10 +72,11 @@
 export default {
     data(){
         return {
+            optBarang: [],
             payload: {
                 barang_id: '',
                 tahun: '',
-                tahun: '',
+                bulan: '',
                 stok: '',
                 terjual: '',
                 sisa: '',
@@ -67,16 +85,41 @@ export default {
         }
     },
 
+    mounted(){
+        this.getBarang()
+    },
+
     methods: {
+        async getBarang(){
+            try{
+                let { data } = await axios.get('barang/opt')
+
+                this.optBarang = data
+            }catch(e){
+                console.log(e)
+                if(e.response.status == 401){
+                    this.$store.dispatch('auth/clear')
+                }
+            }
+        },
         async simpanData(){
             try {
                 let res = await axios.post('aktual/store', this.payload)
 
                 if(res.status == 200){
                     this.$router.push({ name: 'dataAktual' })
+                    this.$notify({
+                        group: "notif",
+                        title: "Berhasil",
+                        type: 'success',
+                        text: 'Berhasil tambah data'
+                    })
                 }
             }catch(e){
                 console.log(e)
+                if(e.response.status == 401){
+                    this.$store.dispatch('auth/clear')
+                }
             }
         },
     }

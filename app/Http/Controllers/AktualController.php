@@ -34,7 +34,7 @@ class AktualController extends Controller
 
         $aktual = Aktual::create([
             'barang_id' => $request->barang_id,
-            'bulan' => $request->tahun,
+            'bulan' => $request->bulan,
             'tahun' => $request->tahun,
             'stok' => $request->stok,
             'terjual' => $request->terjual,
@@ -62,7 +62,7 @@ class AktualController extends Controller
 
         $aktual->update([
             'barang_id' => $request->barang_id,
-            'bulan' => $request->tahun,
+            'bulan' => $request->bulan,
             'tahun' => $request->tahun,
             'stok' => $request->stok,
             'terjual' => $request->terjual,

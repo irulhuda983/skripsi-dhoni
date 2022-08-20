@@ -22,12 +22,22 @@ class PeramalanController extends Controller
         $tahun = Aktual::select('tahun')->where('barang_id', $request->barang_id)->get()->pluck('tahun')->all();
         $terjual = Aktual::select('terjual')->where('barang_id', $request->barang_id)->get()->pluck('terjual')->all();
 
-        // $aktual = Aktual::all();
+        $data = [
+            'bulan' => [],
+            'tahun' => [],
+            'nilai' => [],
+        ];
+
+        if(count($terjual) < 4){
+            return response()->json(['message' => 'data tidak ada'], 404);
+        }
 
         $data = [
             'bulan' => $bulan,
             'tahun' => $tahun,
             'nilai' => $terjual,
+            'akhir_bulan' => end($bulan),
+            'akhir_tahun' => end($tahun),
         ];
 
         // return $data;

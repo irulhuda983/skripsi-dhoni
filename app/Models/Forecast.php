@@ -30,6 +30,8 @@ class Forecast extends Model
         $bulan = $data['bulan'];
         $nilai = $data['nilai'];
         $tahun = $data['tahun'];
+        $akhir_bulan = (int) $data['akhir_bulan'];
+        $akhir_tahun = (int) $data['akhir_tahun'];
 
 
         $forcast = [];
@@ -78,12 +80,18 @@ class Forecast extends Model
             }
         }
 
-        $index_prediksi = count($jml_mad) - 1;
-        $prediksi = $this->rumusWma($jml_mad[$index_prediksi - 3], $jml_mad[$index_prediksi - 2], $jml_mad[$index_prediksi - 1]);
+        $index_prediksi = count($nilai);
+        $prediksi = $this->rumusWma($nilai[$index_prediksi - 3], $nilai[$index_prediksi - 2], $nilai[$index_prediksi - 1]);
+
+        $new_tanggal = '01-'.((int) $akhir_bulan + 1) .'-'.$akhir_tahun;
+
+        if($akhir_bulan == '12'){
+            $new_tanggal = '01-01-'. ((int) $akhir_tahun + 1);
+        }
 
         array_push($forcast, [
-            'bulan' => date('M', strtotime($tgl = '01-01-2021')),
-            'tahun' => 2022,
+            'bulan' => date('M', strtotime($new_tanggal)),
+            'tahun' => date('Y', strtotime($new_tanggal)),
             'aktual' => '?',
             'wma' => round($prediksi, 2),
             'error' => '-',
@@ -94,6 +102,8 @@ class Forecast extends Model
 
         return [
             'data' => $forcast,
+            'hasil' => round($prediksi, 2),
+            'periode' => date('M Y', strtotime($new_tanggal)),
             'error' => [
                 'total' => round(array_sum($jml_err), 2),
             ],
